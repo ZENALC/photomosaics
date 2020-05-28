@@ -89,11 +89,36 @@ def photo_mosaic(imagePath, imageDict, step):
     return editedImage
 
 
+def save_image(image, imageFile):
+    folderName = "Photo Mosaics"
+    if not os.path.exists(folderName):
+        os.mkdir(folderName)
+
+    previous_path = os.getcwd()
+    os.chdir(folderName)
+
+    name, ext = imageFile.split('.')
+    counter = 0
+
+    output_image = f"{name}-mosaic.{ext}"
+    if os.path.exists(output_image):
+        while os.path.exists(output_image):
+            output_image = f"{name}-mosaic{counter}.{ext}"
+            counter += 1
+
+    path = os.path.join(os.getcwd(), output_image)
+    image.save(path)
+    print(f"Photo mosaic has been successfully saved to {path}.")
+    os.chdir(previous_path)
+
+
 def main():
     step = 15  # how many pixels we'll jump over
     imageDict = load_images('imgs', dimension=(step, step))  # load images to paste on
-    editedImage = photo_mosaic('gtr.jpg', imageDict=imageDict, step=step)  # get a photo mosaic
-    editedImage.show()
+    imageFile = 'monkey.jpg'  # image we'll be making a photo mosaic out of
+    editedImage = photo_mosaic(imageFile, imageDict=imageDict, step=step)  # get a photo mosaic
+    # editedImage.show()  # view image
+    save_image(editedImage, imageFile)  # save image
 
 
 if __name__ == "__main__":
