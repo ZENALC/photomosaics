@@ -31,6 +31,15 @@ def get_image(path, dimension=None):
     return image
 
 
+# crop center of image - copied from Pillow documentation
+def crop_center(pil_img, crop_width, crop_height):
+    img_width, img_height = pil_img.size
+    return pil_img.crop(((img_width - crop_width) // 2,
+                         (img_height - crop_height) // 2,
+                         (img_width + crop_width) // 2,
+                         (img_height + crop_height) // 2))
+    
+
 # load all objects in given path and return dictionary containing them
 def load_images(path, dimension=None):
     imagesDictionary = {}
@@ -38,6 +47,10 @@ def load_images(path, dimension=None):
     os.chdir(path)
     for file in os.listdir():
         image = get_image(file, dimension=dimension)
+        width, height = image.size
+        if width != height:
+            toCrop = min((width, height))
+            image = crop_center(image, toCrop, toCrop)
         pixels = list(image.getdata())
         average = get_average(pixels)
         imagesDictionary[average] = image
