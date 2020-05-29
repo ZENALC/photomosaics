@@ -126,8 +126,9 @@ def save_image(image, imageFile):
 
 
 def main():
-    step = 15  # how many pixels we'll jump over
-    imageDict = load_images('imgs', dimension=(step, step))  # load images to paste on
+    step = 20  # how many pixels we'll jump over
+    folder = 'Images'
+    imageDict = load_images(folder, dimension=(step, step))  # load images to paste on
     imageFile = 'monkey.jpg'  # image we'll be making a photo mosaic out of
     editedImage = photo_mosaic(imageFile, imageDict=imageDict, step=step)  # get a photo mosaic
     # editedImage.show()  # view image
