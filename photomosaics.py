@@ -84,10 +84,13 @@ def best_match(rgbTuple, imageDict):
 
 
 # return a manipulated image with mosaic implemented
-def photo_mosaic(imagePath, imageDict, step):
+def photo_mosaic(imagePath, imageDict, step, targetWidth=1500):
     print("Creating a mosaic...")
     image = get_image(imagePath)  # load main image to make photo mosaic
     width, height = image.size  # get width and height
+    if width < targetWidth:  # enlarge image
+        image = resize_image(image, targetWidth=targetWidth)
+        width, height = image.size
     pixels = list(image.getdata())  # get list of RGB values from image
     matrix = [[pixels[width * y + x] for x in range(width)] for y in range(height)]  # get 2D array of RGB values
 
@@ -130,12 +133,20 @@ def save_image(image, imageFile):
     os.chdir(previous_path)
 
 
+def resize_image(image, targetWidth=1500):
+    width, height = image.size
+    baseWidth = targetWidth
+    widthPercent = baseWidth / width
+    newHeight = int(height * widthPercent)
+    return image.resize((baseWidth, newHeight), Image.ANTIALIAS)
+
+
 def main():
-    step = 25  # how many pixels we'll jump over
-    folder = 'Car Images'  # folder to get images from
+    step = 50  # how many pixels we'll jump over, the higher it is, the more HD the sub-image will appear
+    folder = 'Girl Images'  # folder to get images from
     imageDict = load_images(folder, dimension=(step, step))  # load images to paste on
-    imageFile = 'monkey.jpg'  # image we'll be making a photo mosaic out of
-    editedImage = photo_mosaic(imageFile, imageDict=imageDict, step=step)  # get a photo mosaic
+    imageFile = 'shiwaya.jpg'  # image we'll be making a photo mosaic out of
+    editedImage = photo_mosaic(imageFile, imageDict=imageDict, step=step, targetWidth=2500)  # get a photo mosaic
     # editedImage.show()  # view image
     save_image(editedImage, imageFile)  # save image
 
