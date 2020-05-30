@@ -1,10 +1,11 @@
 from PIL import Image
 import os
+import random
 import math
 
 
-# return average RGB tuple from a list of given RGB values
-def get_average(flatList):
+# Return average RGB tuple from a list of given RGB values
+def get_average(flatList: list):
     r, g, b = 0, 0, 0
     length = len(flatList)
     for elem in flatList:
@@ -17,15 +18,15 @@ def get_average(flatList):
     return r, g, b
 
 
-# return an Image object
-def get_image(path, dimension=None, resize=False):
+# Return an Image object
+def get_image(path: str, dimension=None, resize=False):
     image = Image.open(path)  # open Image using path
 
     if resize:
         width, height = image.size
-        if width != height:
-            toCrop = min((width, height))
-            image = crop_center(image, toCrop, toCrop)
+        if width != height:  # check if image is square
+            toCrop = min((width, height))  # get minimum of width or height
+            image = crop_center(image, toCrop, toCrop)  # get cropped, square image
 
     if dimension:  # if some dimension is given, then resize it
         image.thumbnail(dimension)
@@ -38,7 +39,7 @@ def get_image(path, dimension=None, resize=False):
     return image
 
 
-# crop center of image - copied from Pillow documentation
+# Return a center-cropped image - copied from Pillow documentation
 def crop_center(pil_img, crop_width, crop_height):
     img_width, img_height = pil_img.size
     return pil_img.crop(((img_width - crop_width) // 2,
@@ -47,7 +48,16 @@ def crop_center(pil_img, crop_width, crop_height):
                          (img_height + crop_height) // 2))
 
 
-# load all objects in given path and return dictionary containing them
+# Resize image to a bigger size so more sub-pixels are visible
+def resize_image(image, targetWidth=2500):
+    width, height = image.size
+    baseWidth = targetWidth
+    widthPercent = baseWidth / width
+    newHeight = int(height * widthPercent)
+    return image.resize((baseWidth, newHeight), Image.ANTIALIAS)
+
+
+# Load all objects in given path and return dictionary containing them
 def load_images(path, dimension=None):
     print("Loading images...")
     imagesDictionary = {}
@@ -57,33 +67,36 @@ def load_images(path, dimension=None):
         image = get_image(file, dimension=dimension, resize=True)
         pixels = list(image.getdata())
         average = get_average(pixels)
-        imagesDictionary[average] = image
+        if average not in imagesDictionary:
+            imagesDictionary[average] = [image]
+        else:
+            imagesDictionary[average].append(image)
 
     os.chdir(previous_path)
     return imagesDictionary
 
 
-# return euclidean distance between two RGB tuples
+# Return euclidean distance between two RGB tuples
 def euclidean_distance(l1, l2):
     r = (l1[0] - l2[0]) ** 2
     g = (l1[1] - l2[1]) ** 2
     b = (l1[2] - l2[2]) ** 2
-    return math.sqrt((r + g + b))
+    return math.sqrt(r + g + b)
 
 
-# return best possible image from imageDict that matches rgbTuple based on euclidean distance
+# Return best possible image from imageDict that matches rgbTuple based on euclidean distance
 def best_match(rgbTuple, imageDict):
-    bestDistance = None
-    bestMatch = None
+    bestMatch = {'key': None, 'distance': None}
     for otherTuple in imageDict.keys():
         currentDistance = euclidean_distance(rgbTuple, otherTuple)
-        if not bestDistance or currentDistance < bestDistance:
-            bestDistance = currentDistance
-            bestMatch = otherTuple
-    return imageDict[bestMatch]
+        if not bestMatch['key'] or currentDistance < bestMatch['distance']:
+            bestMatch['key'] = otherTuple
+            bestMatch['distance'] = currentDistance
+    key = bestMatch['key']
+    return random.choice(imageDict[key])  # return a random image if there is more than one image
 
 
-# return a manipulated image with mosaic implemented
+# Return a manipulated image with mosaic implemented
 def photo_mosaic(imagePath, imageDict, step, targetWidth=2500):
     print("Creating a mosaic...")
     image = get_image(imagePath)  # load main image to make photo mosaic
@@ -96,9 +109,9 @@ def photo_mosaic(imagePath, imageDict, step, targetWidth=2500):
 
     editedImage = Image.new(image.mode, (width, height))  # instantiate new image
     for y in range(0, height, step):  # loop over rows incrementing by step
-        y2 = y + step if y + step < height else height  # make end point y + step is not over height, else height
+        y2 = y + step if y + step < height else height  # make end point y + step if not over height, else height
         for x in range(0, width, step):  # loop over columns until exhaustion
-            x2 = x + step if x + step < width else width  # make end point x + step is not over width, else width
+            x2 = x + step if x + step < width else width  # make end point x + step if not over width, else width
             subList = []  # instantiate new list to append subMatrix values to
             for z in range(y, y2):  # loop over subMatrix
                 subMatrix = matrix[z][x:x2]
@@ -110,7 +123,7 @@ def photo_mosaic(imagePath, imageDict, step, targetWidth=2500):
     return editedImage
 
 
-# save image to a folder
+# Save image to a folder
 def save_image(image, imageFile):
     folderName = "Photo Mosaics"
     if not os.path.exists(folderName):
@@ -134,22 +147,13 @@ def save_image(image, imageFile):
     os.chdir(previous_path)
 
 
-# resize image to a bigger size so more sub-pixels are visible
-def resize_image(image, targetWidth=2500):
-    width, height = image.size
-    baseWidth = targetWidth
-    widthPercent = baseWidth / width
-    newHeight = int(height * widthPercent)
-    return image.resize((baseWidth, newHeight), Image.ANTIALIAS)
-
-
 def main():
     step = 35  # how many pixels we'll jump over, the higher it is, the more HD the sub-image will appear
     folder = 'Random Images'  # folder to get images from
     imageDict = load_images(folder, dimension=(step, step))  # load images to paste on
     imageFile = 'monkey.jpg'  # image we'll be making a photo mosaic out of
     editedImage = photo_mosaic(imageFile, imageDict=imageDict, step=step, targetWidth=2500)  # get a photo mosaic
-    editedImage.show()  # view image
+    # editedImage.show()  # view image
     save_image(editedImage, imageFile)  # save image
 
 
