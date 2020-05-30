@@ -110,6 +110,7 @@ def photo_mosaic(imagePath, imageDict, step, targetWidth=2500):
     return editedImage
 
 
+# save image to a folder
 def save_image(image, imageFile):
     folderName = "Photo Mosaics"
     if not os.path.exists(folderName):
@@ -133,6 +134,7 @@ def save_image(image, imageFile):
     os.chdir(previous_path)
 
 
+# resize image to a bigger size so more sub-pixels are visible
 def resize_image(image, targetWidth=2500):
     width, height = image.size
     baseWidth = targetWidth
@@ -143,9 +145,9 @@ def resize_image(image, targetWidth=2500):
 
 def main():
     step = 50  # how many pixels we'll jump over, the higher it is, the more HD the sub-image will appear
-    folder = 'Girl Images'  # folder to get images from
+    folder = 'Random Images'  # folder to get images from
     imageDict = load_images(folder, dimension=(step, step))  # load images to paste on
-    imageFile = 'shiwaya.jpg'  # image we'll be making a photo mosaic out of
+    imageFile = 'monkey.jpg'  # image we'll be making a photo mosaic out of
     editedImage = photo_mosaic(imageFile, imageDict=imageDict, step=step, targetWidth=2500)  # get a photo mosaic
     # editedImage.show()  # view image
     save_image(editedImage, imageFile)  # save image

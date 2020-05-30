@@ -64,7 +64,7 @@ def downloadImages(srcList, arg):
 
 
 def main():
-    arg = 'car'  # what to download images of
+    arg = 'dog'  # what to download images of
     url = f'https://unsplash.com/s/photos/{arg}'  # website url we will download from
 
     driver = create_driver()  # get a driver
