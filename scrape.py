@@ -14,7 +14,7 @@ import urllib.request
 import os
 
 
-# return a driver to use Selenium with
+# Return a driver to use Selenium with
 def create_driver():
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument("--start-maximized")
@@ -22,7 +22,7 @@ def create_driver():
     return webdriver.Chrome('chromedriver.exe', options=chrome_options)
 
 
-# return a list of URLs of image sources
+# Return a list of URLs of image sources
 def scrapeImageURLs(driverArgument, pages):
     print("Scraping image URLs...")
     totalImages = set()
@@ -41,7 +41,7 @@ def scrapeImageURLs(driverArgument, pages):
     return totalImages
 
 
-# download images provided in srcList and save them to folder
+# Download images provided in srcList and save them to folder
 def downloadImages(srcList, arg):
     print(f"Downloading {arg} images...")
     previous_path = os.getcwd()
@@ -66,7 +66,6 @@ def downloadImages(srcList, arg):
 def main():
     arg = 'dog'  # what to download images of
     url = f'https://unsplash.com/s/photos/{arg}'  # website url we will download from
-
     driver = create_driver()  # get a driver
     driver.get(url)  # connect and view website
     imgSources = scrapeImageURLs(driver, pages=5)  # scrape img URLs
