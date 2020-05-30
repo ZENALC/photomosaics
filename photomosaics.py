@@ -86,14 +86,15 @@ def euclidean_distance(l1, l2):
 
 # Return best possible image from imageDict that matches rgbTuple based on euclidean distance
 def best_match(rgbTuple, imageDict):
-    bestMatch = {'key': None, 'distance': None}
+    bestKeys = []
+    bestDistance = None
     for otherTuple in imageDict.keys():
         currentDistance = euclidean_distance(rgbTuple, otherTuple)
-        if not bestMatch['key'] or currentDistance < bestMatch['distance']:
-            bestMatch['key'] = otherTuple
-            bestMatch['distance'] = currentDistance
-    key = bestMatch['key']
-    return random.choice(imageDict[key])  # return a random image if there is more than one image
+        if not bestDistance or currentDistance < bestDistance:
+            bestDistance = currentDistance
+            bestKeys.insert(0, otherTuple)
+    key = bestKeys[0]  # not sure how to guarantee that there is no repeats
+    return random.choice(imageDict[key])  # return a random image if there is more than one image with associated key
 
 
 # Return a manipulated image with mosaic implemented
@@ -153,7 +154,7 @@ def main():
     imageDict = load_images(folder, dimension=(step, step))  # load images to paste on
     imageFile = 'monkey.jpg'  # image we'll be making a photo mosaic out of
     editedImage = photo_mosaic(imageFile, imageDict=imageDict, step=step, targetWidth=2500)  # get a photo mosaic
-    # editedImage.show()  # view image
+    editedImage.show()  # view image
     save_image(editedImage, imageFile)  # save image
 
 
