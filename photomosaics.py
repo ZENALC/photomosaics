@@ -18,8 +18,15 @@ def get_average(flatList):
 
 
 # return an Image object
-def get_image(path, dimension=None):
+def get_image(path, dimension=None, resize=False):
     image = Image.open(path)  # open Image using path
+
+    if resize:
+        width, height = image.size
+        if width != height:
+            toCrop = min((width, height))
+            image = crop_center(image, toCrop, toCrop)
+
     if dimension:  # if some dimension is given, then resize it
         image.thumbnail(dimension)
 
@@ -38,7 +45,7 @@ def crop_center(pil_img, crop_width, crop_height):
                          (img_height - crop_height) // 2,
                          (img_width + crop_width) // 2,
                          (img_height + crop_height) // 2))
-    
+
 
 # load all objects in given path and return dictionary containing them
 def load_images(path, dimension=None):
@@ -47,11 +54,7 @@ def load_images(path, dimension=None):
     previous_path = os.getcwd()
     os.chdir(path)
     for file in os.listdir():
-        image = get_image(file, dimension=dimension)
-        width, height = image.size
-        if width != height:
-            toCrop = min((width, height))
-            image = crop_center(image, toCrop, toCrop)
+        image = get_image(file, dimension=dimension, resize=True)
         pixels = list(image.getdata())
         average = get_average(pixels)
         imagesDictionary[average] = image
@@ -128,8 +131,8 @@ def save_image(image, imageFile):
 
 
 def main():
-    step = 30  # how many pixels we'll jump over
-    folder = 'Random Images'  # folder to get images from
+    step = 25  # how many pixels we'll jump over
+    folder = 'Car Images'  # folder to get images from
     imageDict = load_images(folder, dimension=(step, step))  # load images to paste on
     imageFile = 'monkey.jpg'  # image we'll be making a photo mosaic out of
     editedImage = photo_mosaic(imageFile, imageDict=imageDict, step=step)  # get a photo mosaic
