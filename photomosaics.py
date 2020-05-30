@@ -42,6 +42,7 @@ def crop_center(pil_img, crop_width, crop_height):
 
 # load all objects in given path and return dictionary containing them
 def load_images(path, dimension=None):
+    print("Loading images...")
     imagesDictionary = {}
     previous_path = os.getcwd()
     os.chdir(path)
@@ -81,6 +82,7 @@ def best_match(rgbTuple, imageDict):
 
 # return a manipulated image with mosaic implemented
 def photo_mosaic(imagePath, imageDict, step):
+    print("Creating a mosaic...")
     image = get_image(imagePath)  # load main image to make photo mosaic
     width, height = image.size  # get width and height
     pixels = list(image.getdata())  # get list of RGB values from image
@@ -126,8 +128,8 @@ def save_image(image, imageFile):
 
 
 def main():
-    step = 20  # how many pixels we'll jump over
-    folder = 'Images'
+    step = 30  # how many pixels we'll jump over
+    folder = 'Random Images'  # folder to get images from
     imageDict = load_images(folder, dimension=(step, step))  # load images to paste on
     imageFile = 'monkey.jpg'  # image we'll be making a photo mosaic out of
     editedImage = photo_mosaic(imageFile, imageDict=imageDict, step=step)  # get a photo mosaic
