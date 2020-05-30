@@ -1,7 +1,7 @@
 """
     This code scrapes images from the website unsplash.com.
     Unsplash is a website that provides all of its images free of charge to everyone, so scraping
-    images should not be an issue. 
+    images should not be an issue.
 
     With the chromedriver.exe provided on GitHub, it only works for Chrome Version 83. If you have another version
     of Chrome installed, you can download it at https://chromedriver.chromium.org/downloads.

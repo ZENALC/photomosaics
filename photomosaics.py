@@ -144,12 +144,12 @@ def resize_image(image, targetWidth=2500):
 
 
 def main():
-    step = 50  # how many pixels we'll jump over, the higher it is, the more HD the sub-image will appear
+    step = 35  # how many pixels we'll jump over, the higher it is, the more HD the sub-image will appear
     folder = 'Random Images'  # folder to get images from
     imageDict = load_images(folder, dimension=(step, step))  # load images to paste on
     imageFile = 'monkey.jpg'  # image we'll be making a photo mosaic out of
     editedImage = photo_mosaic(imageFile, imageDict=imageDict, step=step, targetWidth=2500)  # get a photo mosaic
-    # editedImage.show()  # view image
+    editedImage.show()  # view image
     save_image(editedImage, imageFile)  # save image
 
 
