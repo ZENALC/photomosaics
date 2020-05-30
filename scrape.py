@@ -1,4 +1,4 @@
-# This code scrapes images from the website Unsplash.com
+# This code scrapes images from the website unsplash.com
 
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.common.keys import Keys
@@ -59,7 +59,7 @@ def main():
 
     driver = create_driver()
     driver.get(url)
-    imgSources = scrapeImageURLs(driver, pages=7)
+    imgSources = scrapeImageURLs(driver, pages=5)
     downloadImages(imgSources, arg)
 
 
