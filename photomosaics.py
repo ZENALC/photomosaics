@@ -84,7 +84,7 @@ def best_match(rgbTuple, imageDict):
 
 
 # return a manipulated image with mosaic implemented
-def photo_mosaic(imagePath, imageDict, step, targetWidth=1500):
+def photo_mosaic(imagePath, imageDict, step, targetWidth=2500):
     print("Creating a mosaic...")
     image = get_image(imagePath)  # load main image to make photo mosaic
     width, height = image.size  # get width and height
@@ -133,7 +133,7 @@ def save_image(image, imageFile):
     os.chdir(previous_path)
 
 
-def resize_image(image, targetWidth=1500):
+def resize_image(image, targetWidth=2500):
     width, height = image.size
     baseWidth = targetWidth
     widthPercent = baseWidth / width
