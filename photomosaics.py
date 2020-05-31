@@ -1,5 +1,6 @@
 from PIL import Image
 import os
+import sys
 import random
 import math
 
@@ -121,6 +122,8 @@ def photo_mosaic(imagePath, imageDict, step, targetWidth=2500):
             average = get_average(flat_list)  # get average RGB tuple
             img = best_match(average, imageDict)  # find best matching image
             editedImage.paste(img, (x, y))  # paste image to x, y coordinate
+            progress_bar(y, height)
+    print()  # print statement because of progress bar not creating new line
     return editedImage
 
 
@@ -148,9 +151,17 @@ def save_image(image, imageFile):
     os.chdir(previous_path)
 
 
+# Display a progress bar when rendering mosaic
+def progress_bar(y, height):
+    percentage = math.ceil(y / height * 100)
+    sys.stdout.write('\r')
+    sys.stdout.write("[%-20s] %d%% rendered." % ('=' * (percentage // 5), percentage))
+    sys.stdout.flush()
+
+
 def main():
-    step = 100  # how many pixels we'll jump over, the higher it is, the more HD the sub-image will appear
-    targetWidth = 10000  # how big output image will be
+    step = 50  # how many pixels we'll jump over, the higher it is, the more HD the sub-image will appear
+    targetWidth = 2500  # how big output image will be
     folder = 'Random Images'  # folder to get images from
     imageDict = load_images(folder, dimension=(step, step))  # load images to paste on
     imageFile = 'monkey.jpg'  # image we'll be making a photo mosaic out of
