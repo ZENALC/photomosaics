@@ -1,4 +1,5 @@
 from PIL import Image
+from concurrent.futures import ThreadPoolExecutor
 import os
 import sys
 import random
@@ -58,13 +59,16 @@ def resize_image(image, targetWidth=2500):
     return image.resize((baseWidth, newHeight), Image.ANTIALIAS)
 
 
-# Load all objects in given path and return dictionary containing them
+# Load all images in given path and return dictionary containing them
 def load_images(path, dimension=None):
     print("Loading images...")
     imagesDictionary = {}
     previous_path = os.getcwd()
     os.chdir(path)
-    for file in os.listdir():
+
+    def process_file(file):
+        if not file.lower().endswith(('.png', '.jpg', '.jpeg')):
+            return
         image = get_image(file, dimension=dimension, resize=True)
         pixels = list(image.getdata())
         average = get_average(pixels)
@@ -72,6 +76,9 @@ def load_images(path, dimension=None):
             imagesDictionary[average] = [image]
         else:
             imagesDictionary[average].append(image)
+
+    with ThreadPoolExecutor() as executor:
+        executor.map(process_file, os.listdir())
 
     os.chdir(previous_path)
     return imagesDictionary
