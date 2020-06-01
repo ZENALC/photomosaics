@@ -128,7 +128,7 @@ def photo_mosaic(imagePath: str, imageDict: dict, step: int, targetWidth: int = 
             average = get_average(flat_list)  # get average RGB tuple
             img = best_match(average, imageDict)  # find best matching image
             editedImage.paste(img, (x, y))  # paste image to x, y coordinate
-            progress_bar(y, height)
+        progress_bar(y, height)
     print()  # print statement because of progress bar not creating new line
     return editedImage
 
