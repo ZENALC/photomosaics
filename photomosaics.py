@@ -1,5 +1,5 @@
-from PIL import Image
 from concurrent.futures import ThreadPoolExecutor
+from PIL import Image
 import os
 import sys
 import random
@@ -7,7 +7,7 @@ import math
 
 
 # Return average RGB tuple from a list of given RGB values
-def get_average(flatList: list):
+def get_average(flatList: list) -> tuple:
     r, g, b = 0, 0, 0
     length = len(flatList)
     for elem in flatList:
@@ -21,7 +21,7 @@ def get_average(flatList: list):
 
 
 # Return an Image object
-def get_image(path: str, dimension=None, resize=False):
+def get_image(path: str, dimension: tuple = None, resize: bool = False) -> Image:
     image = Image.open(path)  # open Image using path
 
     if resize:
@@ -42,7 +42,7 @@ def get_image(path: str, dimension=None, resize=False):
 
 
 # Return a center-cropped image - copied from Pillow documentation
-def crop_center(pil_img, crop_width, crop_height):
+def crop_center(pil_img: Image, crop_width: float, crop_height: float) -> Image:
     img_width, img_height = pil_img.size
     return pil_img.crop(((img_width - crop_width) // 2,
                          (img_height - crop_height) // 2,
@@ -51,7 +51,7 @@ def crop_center(pil_img, crop_width, crop_height):
 
 
 # Resize image to a bigger size so more sub-pixels are visible
-def resize_image(image, targetWidth=2500):
+def resize_image(image: Image, targetWidth: int = 2500) -> Image:
     width, height = image.size
     baseWidth = targetWidth
     widthPercent = baseWidth / width
@@ -60,7 +60,7 @@ def resize_image(image, targetWidth=2500):
 
 
 # Load all images in given path and return dictionary containing them
-def load_images(path, dimension=None):
+def load_images(path: str, dimension: tuple = None) -> dict:
     print("Loading images...")
     imagesDictionary = {}
     previous_path = os.getcwd()
@@ -85,7 +85,7 @@ def load_images(path, dimension=None):
 
 
 # Return euclidean distance between two RGB tuples
-def euclidean_distance(l1, l2):
+def euclidean_distance(l1: tuple, l2: tuple) -> float:
     r = (l1[0] - l2[0]) ** 2
     g = (l1[1] - l2[1]) ** 2
     b = (l1[2] - l2[2]) ** 2
@@ -93,7 +93,7 @@ def euclidean_distance(l1, l2):
 
 
 # Return best possible image from imageDict that matches rgbTuple based on euclidean distance
-def best_match(rgbTuple, imageDict):
+def best_match(rgbTuple: tuple, imageDict: dict) -> Image:
     bestKeys = []
     bestDistance = None
     for otherTuple in imageDict.keys():
@@ -106,7 +106,7 @@ def best_match(rgbTuple, imageDict):
 
 
 # Return a manipulated image with mosaic implemented
-def photo_mosaic(imagePath, imageDict, step, targetWidth=2500):
+def photo_mosaic(imagePath: str, imageDict: dict, step: int, targetWidth: int = 2500) -> Image:
     print("Creating a mosaic...")
     image = get_image(imagePath)  # load main image to make photo mosaic
     width, height = image.size  # get width and height
@@ -135,7 +135,7 @@ def photo_mosaic(imagePath, imageDict, step, targetWidth=2500):
 
 
 # Save image to a folder
-def save_image(image, imageFile):
+def save_image(image: Image, imageFile: str):
     folderName = "Photo Mosaics"
     if not os.path.exists(folderName):
         os.mkdir(folderName)
@@ -159,7 +159,7 @@ def save_image(image, imageFile):
 
 
 # Display a progress bar when rendering mosaic
-def progress_bar(y, height):
+def progress_bar(y: int, height: int):
     percentage = math.ceil(y / height * 100)
     sys.stdout.write('\r')
     sys.stdout.write("[%-20s] %d%% rendered." % ('=' * (percentage // 5), percentage))
