@@ -22,23 +22,22 @@ def get_average(flatList: list) -> tuple:
 
 # Return an Image object
 def get_image(path: str, dimension: tuple = None, resize: bool = False) -> Image:
-    image = Image.open(path)  # open Image using path
+    with Image.open(path) as image:
+        if resize:
+            width, height = image.size
+            if width != height:  # check if image is square
+                toCrop = min((width, height))  # get minimum of width or height
+                image = crop_center(image, toCrop, toCrop)  # get cropped, square image
 
-    if resize:
-        width, height = image.size
-        if width != height:  # check if image is square
-            toCrop = min((width, height))  # get minimum of width or height
-            image = crop_center(image, toCrop, toCrop)  # get cropped, square image
+        if dimension:  # if some dimension is given, then resize it
+            image.thumbnail(dimension)
 
-    if dimension:  # if some dimension is given, then resize it
-        image.thumbnail(dimension)
+        if image.mode == 'P':  # if transparent, convert to RGBA
+            image = image.convert('RGBA')
+        else:  # else force convert to RGB
+            image = image.convert('RGB')
 
-    if image.mode == 'P':  # if transparent, convert to RGBA
-        image = image.convert('RGBA')
-    else:  # else force convert to RGB
-        image = image.convert('RGB')
-
-    return image
+        return image
 
 
 # Return a center-cropped image - copied from Pillow documentation
