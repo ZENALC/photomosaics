@@ -1,4 +1,3 @@
-from concurrent.futures import ThreadPoolExecutor
 from PIL import Image
 import os
 import sys
@@ -65,9 +64,9 @@ def load_images(path: str, dimension: tuple = None) -> dict:
     previous_path = os.getcwd()
     os.chdir(path)
 
-    def process_file(file):
+    for file in os.listdir():
         if not file.lower().endswith(('.png', '.jpg', '.jpeg')):
-            return
+            continue
         image = get_image(file, dimension=dimension, resize=True)
         pixels = list(image.getdata())
         average = get_average(pixels)
@@ -75,9 +74,6 @@ def load_images(path: str, dimension: tuple = None) -> dict:
             imagesDictionary[average] = [image]
         else:
             imagesDictionary[average].append(image)
-
-    with ThreadPoolExecutor() as executor:
-        executor.map(process_file, os.listdir())
 
     os.chdir(previous_path)
     return imagesDictionary
@@ -166,13 +162,13 @@ def progress_bar(y: int, height: int):
 
 
 def main():
-    step = 50  # how many pixels we'll jump over, the higher it is, the more HD the sub-image will appear
-    targetWidth = 2500  # how big output image will be
-    folder = 'Random Images'  # folder to get images from
+    step = 100  # how many pixels we'll jump over, the higher it is, the more HD the sub-image will appear
+    targetWidth = 12500  # how big output image will be
+    folder = 'Black Lives Matter'  # folder to get images from
     imageDict = load_images(folder, dimension=(step, step))  # load images to paste on
-    imageFile = 'monkey.jpg'  # image we'll be making a photo mosaic out of
+    imageFile = 'georgefloyd.jpg'  # image we'll be making a photo mosaic out of
     editedImage = photo_mosaic(imageFile, imageDict=imageDict, step=step, targetWidth=targetWidth)  # get a photo mosaic
-    editedImage.show()  # view image
+    # editedImage.show()  # view image
     save_image(editedImage, imageFile)  # save image
 
 
