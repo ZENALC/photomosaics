@@ -145,6 +145,9 @@ class PhotoMosaic:
         print(f"Photo mosaic has been successfully saved to {path}.")
         os.chdir(previous_path)
 
+    def show_image(self):
+        self.image.show()
+
     @staticmethod
     def euclidean_distance(l1: tuple, l2: tuple) -> float:
         """Return euclidean distance between two RGB tuples"""
@@ -187,4 +190,4 @@ class PhotoMosaic:
 
 if __name__ == "__main__":
     a = PhotoMosaic('monkey.jpg', 'Random Images', targetWidth=2500, step=50)
-    a.save_image()
+    a.show_image()
