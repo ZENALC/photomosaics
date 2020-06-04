@@ -146,7 +146,7 @@ class PhotoMosaic:
         os.chdir(previous_path)
 
     def show_image(self):
-        self.image.show()
+        self.editedImage.show()
 
     @staticmethod
     def euclidean_distance(l1: tuple, l2: tuple) -> float:
