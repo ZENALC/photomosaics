@@ -60,7 +60,6 @@ class PhotoMosaic:
         cacheFile = '_'.join(self.folder.lower().split()) + '_cache.json'
         try:
             with open(cacheFile, 'r') as jsonFile:
-                print("Cache found.")
                 cachedInfo = json.load(jsonFile)
         except FileNotFoundError:
             cachedInfo = {}
@@ -88,7 +87,7 @@ class PhotoMosaic:
         os.chdir(previous_path)
         if cacheUpdated:
             with open(cacheFile, 'w') as jsonFile:
-                json.dump(cachedInfo, jsonFile)
+                json.dump(cachedInfo, jsonFile, indent=4, sort_keys=True)
         return imagesDictionary
 
     def best_match(self, rgbTuple: tuple) -> Image:
