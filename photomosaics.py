@@ -21,7 +21,7 @@ class PhotoMosaic:
     def get_matrix(self):
         """Returns a 2D list of RGB tuples of image"""
         pixels = list(self.image.getdata())
-        return [[pixels[self.width * y + x] for x in range(self.width)] for y in range(self.height)]
+        return [pixels[y:y+self.width] for y in range(0, len(pixels), self.width)]
 
     def get_image(self, path: str, thumbnail: tuple = None, squareImage: bool = False, resize: bool = False) -> Image:
         """Return an Image object"""
@@ -186,5 +186,5 @@ class PhotoMosaic:
 
 
 if __name__ == "__main__":
-    a = PhotoMosaic('monkey.jpg', 'Random Images', targetWidth=5000, step=50)
+    a = PhotoMosaic('monkey.jpg', 'Random Images', targetWidth=2500, step=50)
     a.save_image()
