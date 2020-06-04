@@ -14,13 +14,13 @@ class PhotoMosaic:
         self.image = self.get_image(imageFile, resize=True)
         self.width, self.height = self.image.size
         self.imageDictionary = self.load_images(imagesFolder)
-        self.pixels = list(self.image.getdata())
         self.matrix = self.get_matrix()
         self.editedImage = self.photo_mosaic()
 
     def get_matrix(self):
         """Returns a 2D list of RGB tuples of image"""
-        return [[self.pixels[self.width * y + x] for x in range(self.width)] for y in range(self.height)]
+        pixels = list(self.image.getdata())
+        return [pixels[y:y+self.width] for y in range(0, self.height, self.width)]
 
     def get_image(self, path: str, thumbnail: tuple = None, squareImage: bool = False, resize: bool = False) -> Image:
         """Return an Image object"""
@@ -128,6 +128,10 @@ class PhotoMosaic:
         print(f"Photo mosaic has been successfully saved to {path}.")
         os.chdir(previous_path)
 
+    def show(self):
+        """Display rendered image"""
+        self.editedImage.show()
+
     @staticmethod
     def euclidean_distance(l1: tuple, l2: tuple) -> float:
         """Return euclidean distance between two RGB tuples"""
@@ -170,4 +174,4 @@ class PhotoMosaic:
 
 if __name__ == "__main__":
     a = PhotoMosaic('monkey.jpg', 'Random Images', targetWidth=5000, step=50)
-    a.save_image()
+    a.show()
