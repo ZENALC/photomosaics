@@ -1,4 +1,5 @@
 from PIL import Image
+import json
 import os
 import sys
 import random
@@ -52,25 +53,42 @@ class PhotoMosaic:
         newHeight = int(height * widthPercent)
         return image.resize((baseWidth, newHeight), Image.ANTIALIAS)
 
-    def load_images(self, path: str, dimension: tuple = None) -> dict:
+    def load_images(self, folderPath: str, dimension: tuple = None) -> dict:
         """Load all images in given path and return dictionary containing them"""
         print("Loading images...")
+        cacheUpdated = False
+        cacheFile = '_'.join(self.folder.lower().split()) + '_cache.json'
+        try:
+            with open(cacheFile, 'r') as jsonFile:
+                print("Cache found.")
+                cachedInfo = json.load(jsonFile)
+        except FileNotFoundError:
+            cachedInfo = {}
+
         imagesDictionary = {}
         previous_path = os.getcwd()
-        os.chdir(path)
+        os.chdir(folderPath)
 
         for file in os.listdir():
             if not file.lower().endswith(('.png', '.jpg', '.jpeg')):
                 continue
             image = self.get_image(file, thumbnail=dimension, squareImage=True)
-            pixels = list(image.getdata())
-            average = self.get_average(pixels)
+            if file in cachedInfo.keys():
+                average = tuple(cachedInfo[file])
+            else:
+                pixels = list(image.getdata())
+                average = self.get_average(pixels)
+                cachedInfo[file] = average
+                cacheUpdated = True
             if average not in imagesDictionary:
                 imagesDictionary[average] = [image]
             else:
                 imagesDictionary[average].append(image)
 
         os.chdir(previous_path)
+        if cacheUpdated:
+            with open(cacheFile, 'w') as jsonFile:
+                json.dump(cachedInfo, jsonFile)
         return imagesDictionary
 
     def best_match(self, rgbTuple: tuple) -> Image:
