@@ -93,11 +93,11 @@ class PhotoMosaic:
             y2 = y + self.step if y + self.step < self.height else self.height
             for x in range(0, self.width, self.step):
                 x2 = x + self.step if x + self.step < self.width else self.width
-                subList = []
+                subMatrix = []
                 for z in range(y, y2):
-                    subMatrix = self.matrix[z][x:x2]
-                    subList.append(subMatrix)
-                flat_list = [rgbTuple for elem in subList for rgbTuple in elem]
+                    subList = self.matrix[z][x:x2]
+                    subMatrix.append(subList)
+                flat_list = [rgbTuple for row in subMatrix for rgbTuple in row]
                 average = self.get_average(flat_list)
                 img = self.best_match(average)
                 editedImage.paste(img, (x, y))
