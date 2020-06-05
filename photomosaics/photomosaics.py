@@ -53,17 +53,35 @@ class PhotoMosaic:
         newHeight = int(height * widthPercent)
         return image.resize((baseWidth, newHeight), Image.ANTIALIAS)
 
+    @staticmethod
+    def get_cache(cacheFile):
+        previousPath = os.getcwd()
+        if not os.path.exists('../cache'):
+            os.mkdir('../cache')
+            return {}
+        os.chdir('../cache')
+        try:
+            with open(cacheFile, 'r') as jsonFile:
+                cache = json.load(jsonFile)
+        except FileNotFoundError:
+            cache = {}
+        os.chdir(previousPath)
+        return cache
+
+    @staticmethod
+    def store_cache(cacheFile, cachedInfo):
+        previousPath = os.getcwd()
+        os.chdir('../cache')
+        with open(cacheFile, 'w') as jsonFile:
+            json.dump(cachedInfo, jsonFile, indent=4, sort_keys=True)
+        os.chdir(previousPath)
+
     def load_images(self, folderPath: str, dimension: tuple = None) -> dict:
         """Load all images in given path and return dictionary containing them"""
         print("Loading images...")
         cacheUpdated = False
         cacheFile = '_'.join(self.folder.lower().split()) + '_cache.json'
-        try:
-            with open(cacheFile, 'r') as jsonFile:
-                cachedInfo = json.load(jsonFile)
-        except FileNotFoundError:
-            cachedInfo = {}
-
+        cachedInfo = self.get_cache(cacheFile)
         imagesDictionary = {}
         previous_path = os.getcwd()
         os.chdir(folderPath)
@@ -86,8 +104,7 @@ class PhotoMosaic:
 
         os.chdir(previous_path)
         if cacheUpdated:
-            with open(cacheFile, 'w') as jsonFile:
-                json.dump(cachedInfo, jsonFile, indent=4, sort_keys=True)
+            self.store_cache(cacheFile, cachedInfo)
         return imagesDictionary
 
     def best_match(self, rgbTuple: tuple) -> Image:
@@ -187,7 +204,3 @@ class PhotoMosaic:
         sys.stdout.write("[%-20s] %d%% rendered." % ('=' * (percentage // 5), percentage))
         sys.stdout.flush()
 
-
-if __name__ == "__main__":
-    a = PhotoMosaic('kalu.jpg', 'Car Images', targetWidth=2500, step=200)
-    a.save_image()
