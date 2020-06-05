@@ -14,7 +14,7 @@ class PhotoMosaic:
         self.imageFile = imageFile
         self.image = self.get_image(imageFile, resize=True)
         self.width, self.height = self.image.size
-        self.imageDictionary = self.load_images(imagesFolder)
+        self.imageDictionary = self.load_images(imagesFolder, dimension=(self.step, self.step))
         self.matrix = self.get_matrix()
         self.editedImage = self.photo_mosaic()
 
@@ -23,7 +23,7 @@ class PhotoMosaic:
         pixels = list(self.image.getdata())
         return [pixels[y:y+self.width] for y in range(0, len(pixels), self.width)]
 
-    def get_image(self, path: str, thumbnail: tuple = None, squareImage: bool = False, resize: bool = False) -> Image:
+    def get_image(self, path: str, thumbnail: tuple = None, squareImage: bool = None, resize: bool = None) -> Image:
         """Return an Image object"""
         with Image.open(path) as image:
             if squareImage:  # if we need to get a square image
@@ -189,5 +189,5 @@ class PhotoMosaic:
 
 
 if __name__ == "__main__":
-    a = PhotoMosaic('monkey.jpg', 'Random Images', targetWidth=2500, step=50)
-    a.show_image()
+    a = PhotoMosaic('kalu.jpg', 'Car Images', targetWidth=2500, step=200)
+    a.save_image()
