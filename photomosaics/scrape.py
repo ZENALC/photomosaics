@@ -3,8 +3,7 @@
     Unsplash is a website that provides all of its images free of charge to everyone, so scraping
     images should not be an issue.
 
-    With the chromedriver.exe provided on GitHub, it only works for Chrome Version 83. If you have another version
-    of Chrome installed, you can download it at https://chromedriver.chromium.org/downloads.
+    If you have do not have chromedriver, you can download it at https://chromedriver.chromium.org/downloads.
 """
 
 from selenium.common.exceptions import StaleElementReferenceException
@@ -15,19 +14,19 @@ import os
 
 
 # Return a driver to use Selenium with
-def create_driver():
+def create_driver(driverPath):
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument("--start-maximized")
     chrome_options.add_argument("--incognito")
-    return webdriver.Chrome('chromedriver.exe', options=chrome_options)
+    return webdriver.Chrome('driverPath', options=chrome_options)
 
 
 # Return a list of URLs of image sources
-def scrapeImageURLs(driverArgument, pages):
+def scrapeImageURLs(driver, pages):
     print("Scraping image URLs...")
     totalImages = set()
     for counter in range(pages):
-        images = driverArgument.find_elements_by_tag_name('img')
+        images = driver.find_elements_by_tag_name('img')
         for image in images:
             try:
                 src = image.get_attribute('src')
@@ -35,9 +34,8 @@ def scrapeImageURLs(driverArgument, pages):
                     totalImages.add(src)  # scrape all photos but profile pics
             except StaleElementReferenceException:
                 continue
-        driverArgument.find_element_by_tag_name('body').send_keys(Keys.PAGE_DOWN, Keys.PAGE_DOWN, Keys.PAGE_DOWN)
-    driverArgument.quit()
-
+        driver.find_element_by_tag_name('body').send_keys(Keys.PAGE_DOWN, Keys.PAGE_DOWN, Keys.PAGE_DOWN)
+    driver.quit()
     return totalImages
 
 
@@ -59,14 +57,14 @@ def downloadImages(srcList, arg):
                 imageName = f'{arg}-{counter}.jpg'
         urllib.request.urlretrieve(src, imageName)
         print(f"Downloaded {index + 1}/{amtOfImages} images.")
-
     os.chdir(previous_path)
 
 
 def main():
     arg = 'dog'  # what to download images of
     url = f'https://unsplash.com/s/photos/{arg}'  # website url we will download from
-    driver = create_driver()  # get a driver
+    driverPath = ''  # path to driver
+    driver = create_driver(driverPath)  # get a driver
     driver.get(url)  # connect and view website
     imgSources = scrapeImageURLs(driver, pages=5)  # scrape img URLs
     downloadImages(imgSources, arg)  # download images
