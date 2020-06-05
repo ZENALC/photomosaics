@@ -154,6 +154,7 @@ class PhotoMosaic:
         os.chdir(previous_path)
 
     def show_image(self):
+        """Show image in default picture viewer"""
         self.editedImage.show()
 
     @staticmethod

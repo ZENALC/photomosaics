@@ -13,16 +13,16 @@ import urllib.request
 import os
 
 
-# Return a driver to use Selenium with
 def create_driver(driverPath):
+    """Return a driver to use selenium with"""
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument("--start-maximized")
     chrome_options.add_argument("--incognito")
     return webdriver.Chrome('driverPath', options=chrome_options)
 
 
-# Return a list of URLs of image sources
 def scrapeImageURLs(driver, pages):
+    """Returns a list of URLs of image sources"""
     print("Scraping image URLs...")
     totalImages = set()
     for counter in range(pages):
@@ -39,8 +39,8 @@ def scrapeImageURLs(driver, pages):
     return totalImages
 
 
-# Download images provided in srcList and save them to folder
 def downloadImages(srcList, arg):
+    """Download images provided in srcList and save them to folder"""
     print(f"Downloading {arg} images...")
     previous_path = os.getcwd()
     folder = f'{arg.capitalize()} Images'
