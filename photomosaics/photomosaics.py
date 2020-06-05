@@ -7,8 +7,8 @@ import math
 
 
 class PhotoMosaic:
-    def __init__(self, imageFile, imagesFolder, step=100, targetWidth=12500):
-        self.folder = imagesFolder
+    def __init__(self, imageFile, imagesFolder, step=100, targetWidth=5000):
+        self.folder = os.path.basename(os.path.normpath(imagesFolder))
         self.step = step
         self.targetWidth = targetWidth
         self.imageFile = os.path.basename(imageFile)
@@ -20,6 +20,7 @@ class PhotoMosaic:
 
     def get_matrix(self) -> list:
         """Returns a 2D list of RGB tuples of image"""
+        print("Loading matrix...")
         pixels = list(self.image.getdata())
         return [pixels[y:y+self.width] for y in range(0, len(pixels), self.width)]
 
@@ -56,37 +57,27 @@ class PhotoMosaic:
     @staticmethod
     def get_cache(cacheFile) -> dict:
         """Return a cached dictionary from json file if exists"""
-        previousPath = os.getcwd()
-        if not os.path.exists('../cache'):
-            os.mkdir('../cache')
-            return {}
-        os.chdir('../cache')
         try:
             with open(cacheFile, 'r') as jsonFile:
-                cache = json.load(jsonFile)
+                return json.load(jsonFile)
         except FileNotFoundError:
-            cache = {}
-        os.chdir(previousPath)
-        return cache
+            return {}
 
     @staticmethod
     def store_cache(cacheFile, cachedInfo):
         """Store average of images' RGB values as cache for future use"""
-        previousPath = os.getcwd()
-        os.chdir('../cache')
         with open(cacheFile, 'w') as jsonFile:
             json.dump(cachedInfo, jsonFile, indent=4, sort_keys=True)
-        os.chdir(previousPath)
 
     def load_images(self, folderPath: str, dimension: tuple) -> dict:
         """Load all images in given path and return dictionary containing them"""
         print("Loading images...")
+        previous_path = os.getcwd()
+        os.chdir(folderPath)
         cacheUpdated = False
         cacheFile = '_'.join(self.folder.lower().split()) + '_cache.json'
         cachedInfo = self.get_cache(cacheFile)
         imagesDictionary = {}
-        previous_path = os.getcwd()
-        os.chdir(folderPath)
 
         for file in os.listdir():
             if not file.lower().endswith(('.png', '.jpg', '.jpeg')):
@@ -104,9 +95,10 @@ class PhotoMosaic:
             else:
                 imagesDictionary[average].append(image)
 
-        os.chdir(previous_path)
         if cacheUpdated:
             self.store_cache(cacheFile, cachedInfo)
+
+        os.chdir(previous_path)
         return imagesDictionary
 
     def best_match(self, rgbTuple: tuple) -> Image:
