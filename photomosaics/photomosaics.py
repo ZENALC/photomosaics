@@ -11,14 +11,14 @@ class PhotoMosaic:
         self.folder = imagesFolder
         self.step = step
         self.targetWidth = targetWidth
-        self.imageFile = imageFile
+        self.imageFile = os.path.basename(imageFile)
         self.image = self.get_image(imageFile, resize=True)
         self.width, self.height = self.image.size
         self.imageDictionary = self.load_images(imagesFolder, dimension=(self.step, self.step))
         self.matrix = self.get_matrix()
         self.editedImage = self.photo_mosaic()
 
-    def get_matrix(self):
+    def get_matrix(self) -> list:
         """Returns a 2D list of RGB tuples of image"""
         pixels = list(self.image.getdata())
         return [pixels[y:y+self.width] for y in range(0, len(pixels), self.width)]
@@ -54,7 +54,8 @@ class PhotoMosaic:
         return image.resize((baseWidth, newHeight), Image.ANTIALIAS)
 
     @staticmethod
-    def get_cache(cacheFile):
+    def get_cache(cacheFile) -> dict:
+        """Return a cached dictionary from json file if exists"""
         previousPath = os.getcwd()
         if not os.path.exists('../cache'):
             os.mkdir('../cache')
@@ -70,13 +71,14 @@ class PhotoMosaic:
 
     @staticmethod
     def store_cache(cacheFile, cachedInfo):
+        """Store average of images' RGB values as cache for future use"""
         previousPath = os.getcwd()
         os.chdir('../cache')
         with open(cacheFile, 'w') as jsonFile:
             json.dump(cachedInfo, jsonFile, indent=4, sort_keys=True)
         os.chdir(previousPath)
 
-    def load_images(self, folderPath: str, dimension: tuple = None) -> dict:
+    def load_images(self, folderPath: str, dimension: tuple) -> dict:
         """Load all images in given path and return dictionary containing them"""
         print("Loading images...")
         cacheUpdated = False
@@ -142,21 +144,18 @@ class PhotoMosaic:
     def save_image(self):
         """Save image to a folder"""
         folderName = "Photo Mosaics"
+        previous_path = os.getcwd()
+        os.chdir('../')
         if not os.path.exists(folderName):
             os.mkdir(folderName)
-
-        previous_path = os.getcwd()
         os.chdir(folderName)
-
         name, ext = self.imageFile.split('.')
         counter = 0
-
         output_image = f"{name}-mosaic.{ext}"
         if os.path.exists(output_image):
             while os.path.exists(output_image):
                 output_image = f"{name}-mosaic{counter}.{ext}"
                 counter += 1
-
         path = os.path.join(os.getcwd(), output_image)
         self.editedImage.save(path)
         print(f"Photo mosaic has been successfully saved to {path}.")
